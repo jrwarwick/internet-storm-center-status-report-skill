@@ -1,1 +1,2 @@
-Presently, the internet storm center condition is: green.
+Presently, the internet storm center condition is: {isc_status}.
+Reported I.S.C. condition is: {isc_status}.
