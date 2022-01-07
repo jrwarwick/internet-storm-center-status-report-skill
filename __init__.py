@@ -19,7 +19,7 @@
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""Mycroft skill for ascertaining and reporting the current Internet Storm Center global condition."""
+"""Mycroft skill for ascertaining and reporting the current Internet Storm Center global threat condition."""
 from mycroft import MycroftSkill, intent_file_handler
 import requests
 
@@ -32,8 +32,9 @@ class InternetStormCenterStatusReport(MycroftSkill):
         r = requests.get('https://isc.sans.edu/infocon.txt')
         self.log.info("isc.sans.edu HTTP GET was " + str(r.status_code))
         self.log.info("isc.sans.edu HTTP GET was " + r.text)
-        self.gui.clear()
-        self.gui.show_text(r.text, "Internet Storm Center condition")
+        #gui stuff is just crashing the display right now.
+        #self.gui.clear()
+        #self.gui.show_text(r.text, "Internet Storm Center condition")
         self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
 
 
