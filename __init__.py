@@ -34,8 +34,27 @@ class InternetStormCenterStatusReport(MycroftSkill):
         self.log.info("isc.sans.edu HTTP GET was " + r.text)
         #gui stuff is just crashing the display right now.
         #self.gui.clear()
-        #self.gui.show_text(r.text, "Internet Storm Center condition")
+        self.gui.show_text(r.text, "SANS Internet Storm Center threat condition")
         self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
+
+    @intent_file_handler('watch.status.center.storm.internet.intent')
+    def handle_watch_status_center_storm_internet(self, message):
+        self.schedule_repeating_event(self.handle_nongreen_status_center_storm_internet, None, 60 * int(self.settings.get('polling_frequency',60)))
+        self.speak("Very well, I will notify you if I notice that the I S C global threat condition changes to a non-green condition.")
+        self.speak("I will be checking every " + self.settings.get('polling_frequency',60) + " minutes.")
+
+    def handle_nongreen_status_center_storm_internet(self):
+        r = requests.get('https://isc.sans.edu/infocon.txt')
+        self.log.info("(scheduled polling) isc.sans.edu HTTP GET was " + str(r.status_code))
+        self.log.info("(scheduled polling) isc.sans.edu HTTP GET was " + r.text)
+        #TODO: keep track of consecutive failures to GET. 
+        #      If it exceeds reasonable threshold, notify user and offer to UNschedule
+        if not green in r.text:
+            #gui stuff is just crashing the display right now.
+            #self.gui.clear()
+            #self.gui.show_text(r.text, "SANS Internet Storm Center threat condition")
+            self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
+            #TODO: more urgent/alerty version of the dialog file for these notifications.
 
 
 def create_skill():
