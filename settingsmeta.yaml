@@ -5,6 +5,6 @@ skillMetadata:
       fields:
         - name: polling_frequency
           type: text
-          label: Automatic Polling Frequency in Minutes (NOT YET ACTIVE)
+          label: Automatic Polling Frequency in Minutes
           value: "60"
           placeholder: 60
