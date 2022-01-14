@@ -23,6 +23,7 @@
 from mycroft import MycroftSkill, intent_file_handler
 import requests
 
+
 class InternetStormCenterStatusReport(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
@@ -33,23 +34,28 @@ class InternetStormCenterStatusReport(MycroftSkill):
         self.log.info("isc.sans.edu HTTP GET was " + str(r.status_code))
         self.log.info("isc.sans.edu HTTP GET was " + r.text)
         self.display_condition(r.text)
-        self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
+        self.speak_dialog('report.status.center.storm.internet', {'isc_status': r.text})
 
     @intent_file_handler('watch.status.center.storm.internet.intent')
     def handle_watch_status_center_storm_internet(self, message):
-        self.schedule_repeating_event(self.handle_nongreen_status_center_storm_internet, None, 60 * int(self.settings.get('polling_frequency',60)))
-        self.speak("Very well, I will notify you if I notice that the I S C global threat condition changes to a non-green condition.")
-        self.speak("I will be checking every " + self.settings.get('polling_frequency',60) + " minutes.")
+        self.schedule_repeating_event(self.handle_nongreen_status_center_storm_internet,
+                                      None,
+                                      60 * int(self.settings.get('polling_frequency', 60)))
+        self.speak("Very well, I will notify you if I notice that the I S C "
+                   "global threat condition changes to a non-green condition.")
+        self.speak("I will be checking every "
+                   + self.settings.get('polling_frequency', 60) + " minutes.")
 
     def handle_nongreen_status_center_storm_internet(self):
         r = requests.get('https://isc.sans.edu/infocon.txt')
-        self.log.info("(scheduled polling) isc.sans.edu HTTP GET was " + str(r.status_code))
-        self.log.info("(scheduled polling) isc.sans.edu HTTP GET was " + r.text)
-        #TODO: keep track of consecutive failures to GET. 
+        self.log.info("(sched. polling) isc.sans.edu HTTP GET was "
+                      + str(r.status_code))
+        self.log.info("(sched. polling) isc.sans.edu HTTP GET was " + r.text)
+        # TODO: keep track of consecutive failures to GET.
         #      If it exceeds reasonable threshold, notify user and offer to UNschedule
-        if not green in r.text:
-            self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
-            #TODO: more urgent/alerty version of the dialog file for these notifications.
+        if green not in r.text:
+            self.speak_dialog('report.status.center.storm.internet', {'isc_status': r.text})
+            # TODO: more urgent/alerty version of the dialog file for these notifications.
             self.display_condition(r.text)
 
     def display_condition(self, condition):
@@ -80,10 +86,9 @@ class InternetStormCenterStatusReport(MycroftSkill):
 		</style>
 	</head>
 	<body> <div><h1>ISC Global Threat Condition:</h1><h1 id="condition"> {condition} </h1></div></body>
-	</html>
-""" 
+	</html>"""
         self.gui.show_html(htmlsrc)
+
 
 def create_skill():
     return InternetStormCenterStatusReport()
-
