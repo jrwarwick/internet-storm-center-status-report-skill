@@ -6,7 +6,10 @@ The SANS Internet Storm Center (https://isc.sans.edu/about.html) is a free servi
 
 TODO: 
  - have Mycroft *automatically* poll this status and proactively alert the user on a change in status.
- - maybe have another intent to display https://isctv.sans.edu/  (first see if it displays nicely on self.gui !)
+ - because its a "status" report (slightly more general than the ISC threat condition):
+   - scrape diaries for event/alert types of information
+   - offer to stream podcasts https://isc.sans.edu/dailypodcast.xml
+   - maybe have another intent to display https://isctv.sans.edu/  (first see if it displays nicely on self.gui!)
 
 ## Examples
 * "What is the current internet storm center status?"

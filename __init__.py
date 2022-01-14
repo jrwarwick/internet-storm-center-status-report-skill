@@ -32,9 +32,7 @@ class InternetStormCenterStatusReport(MycroftSkill):
         r = requests.get('https://isc.sans.edu/infocon.txt')
         self.log.info("isc.sans.edu HTTP GET was " + str(r.status_code))
         self.log.info("isc.sans.edu HTTP GET was " + r.text)
-        #gui stuff is just crashing the display right now.
-        #self.gui.clear()
-        self.gui.show_text(r.text, "SANS Internet Storm Center threat condition")
+        self.display_condition(r.text)
         self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
 
     @intent_file_handler('watch.status.center.storm.internet.intent')
@@ -50,12 +48,41 @@ class InternetStormCenterStatusReport(MycroftSkill):
         #TODO: keep track of consecutive failures to GET. 
         #      If it exceeds reasonable threshold, notify user and offer to UNschedule
         if not green in r.text:
-            #gui stuff is just crashing the display right now.
-            #self.gui.clear()
-            #self.gui.show_text(r.text, "SANS Internet Storm Center threat condition")
             self.speak_dialog('report.status.center.storm.internet',{'isc_status': r.text})
             #TODO: more urgent/alerty version of the dialog file for these notifications.
+            self.display_condition(r.text)
 
+    def display_condition(self, condition):
+        self.log.info("invocation success........" + condition)
+        htmlsrc = f"""<!DOCTYPE html><html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>SANS ISC Global Threat Condition</title>
+		<style>
+			body{{
+				background-color:black;
+				margin:.25em;
+				padding: 2em;
+			}}
+			div{{
+				background-color:{condition};
+				margin:.25em;
+				padding: 2em;
+				border-radius: 2em;
+			}}
+			h1{{
+				text-align:center;
+				text-transform:capitalize;
+			}}
+			#condition{{
+				font-size:6em;
+			}}
+		</style>
+	</head>
+	<body> <div><h1>ISC Global Threat Condition:</h1><h1 id="condition"> {condition} </h1></div></body>
+	</html>
+""" 
+        self.gui.show_html(htmlsrc)
 
 def create_skill():
     return InternetStormCenterStatusReport()
