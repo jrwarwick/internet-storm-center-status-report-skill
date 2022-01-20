@@ -19,18 +19,25 @@
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""Mycroft skill for ascertaining and reporting the current Internet Storm Center global threat condition."""
+"""Mycroft skill for ascertaining and reporting the current
+   Internet Storm Center global threat condition.
+"""
 from mycroft import MycroftSkill, intent_file_handler
 import requests
 
+ISC_INFOCON_URL = "https://isc.sans.edu/infocon.txt"
+
 
 class InternetStormCenterStatusReport(MycroftSkill):
+    """Mycroft skill for ascertaining and reporting the current
+       Internet Storm Center global threat condition.
+    """
     def __init__(self):
         MycroftSkill.__init__(self)
 
     @intent_file_handler('report.status.center.storm.internet.intent')
     def handle_report_status_center_storm_internet(self, message):
-        r = requests.get('https://isc.sans.edu/infocon.txt')
+        r = requests.get(ISC_INFOCON_URL)
         self.log.info("isc.sans.edu HTTP GET was " + str(r.status_code))
         self.log.info("isc.sans.edu HTTP GET was " + r.text)
         self.display_condition(r.text)
@@ -41,13 +48,14 @@ class InternetStormCenterStatusReport(MycroftSkill):
         self.schedule_repeating_event(self.handle_nongreen_status_center_storm_internet,
                                       None,
                                       60 * int(self.settings.get('polling_frequency', 60)))
+        # probably need to put that into an exception catching block.
         self.speak("Very well, I will notify you if I notice that the I S C "
                    "global threat condition changes to a non-green condition.")
         self.speak("I will be checking every "
                    + self.settings.get('polling_frequency', 60) + " minutes.")
 
     def handle_nongreen_status_center_storm_internet(self):
-        r = requests.get('https://isc.sans.edu/infocon.txt')
+        r = requests.get(ISC_INFOCON_URL)
         self.log.info("(sched. polling) isc.sans.edu HTTP GET was "
                       + str(r.status_code))
         self.log.info("(sched. polling) isc.sans.edu HTTP GET was " + r.text)
@@ -61,32 +69,34 @@ class InternetStormCenterStatusReport(MycroftSkill):
     def display_condition(self, condition):
         self.log.info("invocation success........" + condition)
         htmlsrc = f"""<!DOCTYPE html><html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>SANS ISC Global Threat Condition</title>
-		<style>
-			body{{
-				background-color:black;
-				margin:.25em;
-				padding: 2em;
-			}}
-			div{{
-				background-color:{condition};
-				margin:.25em;
-				padding: 2em;
-				border-radius: 2em;
-			}}
-			h1{{
-				text-align:center;
-				text-transform:capitalize;
-			}}
-			#condition{{
-				font-size:6em;
-			}}
-		</style>
-	</head>
-	<body> <div><h1>ISC Global Threat Condition:</h1><h1 id="condition"> {condition} </h1></div></body>
-	</html>"""
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SANS ISC Global Threat Condition</title>
+    <style>
+      body{{
+        background-color:black;
+        margin:.25em;
+        padding: 2em;
+      }}
+      div{{
+        background-color:{condition};
+        margin:.25em;
+        padding: 2em;
+        border-radius: 2em;
+      }}
+      h1{{
+        text-align:center;
+        text-transform:capitalize;
+      }}
+      #condition{{
+        font-size:6em;
+      }}
+    </style>
+  </head>
+  <body><div>
+        <h1>ISC Global Threat Condition:</h1><h1 id="condition"> {condition} </h1>
+        </div></body>
+  </html>"""
         self.gui.show_html(htmlsrc)
 
 
