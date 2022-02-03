@@ -61,7 +61,7 @@ class InternetStormCenterStatusReport(MycroftSkill):
         self.log.info("(sched. polling) isc.sans.edu HTTP GET was " + r.text)
         # TODO: keep track of consecutive failures to GET.
         #      If it exceeds reasonable threshold, notify user and offer to UNschedule
-        if green not in r.text:
+        if "green" not in r.text:
             self.speak_dialog('report.status.center.storm.internet', {'isc_status': r.text})
             # TODO: more urgent/alerty version of the dialog file for these notifications.
             self.display_condition(r.text)
